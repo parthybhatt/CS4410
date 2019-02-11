@@ -48,6 +48,7 @@ void interrupts_catch(){
 	//printf("CATCH INTERRUPTS\n");	// replace this line
 	interrupts_enable();
 	sighandler(2); //Signal number is 2 for Ctrl+C = SIGINT
+	printf("Got signal 2");
 // END
 }
 
@@ -59,7 +60,7 @@ void interrupts_catch(){
 static void redir_fd(int fd1, int fd2){
 // BEGIN
 	//printf("REDIRECT %d TO %d\n", fd1, fd2);	// replace this line
-	
+	//open fd1 and fd2 using file pointer and copy
 // END
 }
 
@@ -161,12 +162,29 @@ static void execute(command_t command){
 static void spawn(command_t command, int background){
 // BEGIN
 	//printf("RUN %s\n", command->argv[0]);	// replace this line
-	int pid = fork();
+	pid_t pid = fork();
 	if(pid == 0){
-		exec(commmand);
+		interrupts_disable();
+		execute(commmand);
 	}
-	if(!background){
-		wait(NULL);
+	else{
+		if(!background){
+			wait();
+			/*wifexited gives the true for normal termination false for problem
+			if normal, get wifexitstatus and print the temrination status
+			if not then print the signal
+			*/
+			if(WIFEXITED()){
+				printf("Process %d terminated with the signal %d", pid, WIFEXITSTATUS());
+			}
+			else{
+				printf("Process %d terminated with the signal %d", pid, WIFSIGNALED());
+			}
+		}
+		else{
+			pid = getpid();
+			printf("process %d running in background", pid);
+		}
 	}
 // END
 }
