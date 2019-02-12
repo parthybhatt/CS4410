@@ -161,7 +161,6 @@ static void execute(command_t command){
  */
 static void spawn(command_t command, int background){
 // BEGIN
-	//printf("RUN %s\n", command->argv[0]);	// replace this line
 	pid_t pid = fork();
 	if(pid == 0){
 		interrupts_disable();
@@ -169,16 +168,17 @@ static void spawn(command_t command, int background){
 	}
 	else{
 		if(!background){
-			wait();
+			int status;
+			wait(&status);
 			/*wifexited gives the true for normal termination false for problem
 			if normal, get wifexitstatus and print the temrination status
 			if not then print the signal
 			*/
-			if(WIFEXITED()){
-				printf("Process %d terminated with the signal %d", pid, WIFEXITSTATUS());
+			if(WIFEXITED(status)){
+				printf("Process %d ended with status: %d", pid, WEXITSTATUS());
 			}
-			else{
-				printf("Process %d terminated with the signal %d", pid, WIFSIGNALED());
+			else if(WIFSIGNALED(status)){
+				printf("Process %d terminated due to the signal %d", pid, WTERMSIG());
 			}
 		}
 		else{
