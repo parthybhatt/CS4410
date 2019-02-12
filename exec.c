@@ -164,7 +164,7 @@ static void spawn(command_t command, int background){
 	pid_t pid = fork();
 	if(pid == 0){
 		interrupts_disable();
-		execute(commmand);
+		execute(command);
 	}
 	else{
 		if(!background){
