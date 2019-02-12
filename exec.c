@@ -175,10 +175,10 @@ static void spawn(command_t command, int background){
 			if not then print the signal
 			*/
 			if(WIFEXITED(status)){
-				printf("Process %d ended with status: %d", pid, WEXITSTATUS());
+				printf("Process %d ended with status: %d", pid, WEXITSTATUS(status));
 			}
 			else if(WIFSIGNALED(status)){
-				printf("Process %d terminated due to the signal %d", pid, WTERMSIG());
+				printf("Process %d terminated due to the signal %d", pid, WTERMSIG(status));
 			}
 		}
 		else{
